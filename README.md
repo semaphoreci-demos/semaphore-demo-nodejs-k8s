@@ -1,9 +1,11 @@
-# Semaphore demo CI/CD pipeline using Node.js
+# Semaphore demo CI/CD pipeline using Node.js and Kubernetes
 
 Example application and CI/CD pipeline showing how to run a Node.js project
 on Semaphore 2.0. 
 
 The application is based on Nest.js. The code is written in TypeScript.
+
+The application is deployed to Google Cloud Kubernetes.
 
 ## CI/CD on Semaphore
 
