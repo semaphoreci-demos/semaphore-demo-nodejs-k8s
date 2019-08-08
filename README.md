@@ -47,11 +47,11 @@ The CI pipeline will look like this:
 The example pipeline contains 2 blocks:
 
 - Build
- - Install Dependencies: installs and caches all npm dependencies
+    - Install Dependencies: installs and caches all npm dependencies
 - Test
- - Lint: Runs tslint to check project files codestyle
- - Unit tests: Runs Unit Tests
- - E2E tests: Runs E2E tests through jest on server.
+    - Lint: Runs tslint to check project files codestyle
+    - Unit tests: Runs Unit Tests
+    - E2E tests: Runs E2E tests through jest on server.
 
 Then, if all checks are ok, we move to build pipeline. It consists of one block
 
