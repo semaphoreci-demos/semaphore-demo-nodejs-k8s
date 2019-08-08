@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: semaphore-demo-javascript-server
+  name: semaphore-demo-nodejs-k8s-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: semaphore-demo-javascript-server
+      app: semaphore-demo-nodejs-k8s-server
   template:
     metadata:
       labels:
-        app: semaphore-demo-javascript-server
+        app: semaphore-demo-nodejs-k8s-server
     spec:
       containers:
-        - name: semaphore-demo-javascript-server
-          image: gcr.io/$GCP_PROJECT_ID/semaphore-demo-javascript-server:$SEMAPHORE_WORKFLOW_ID
+        - name: semaphore-demo-nodejs-k8s-server
+          image: gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:$SEMAPHORE_WORKFLOW_ID
           env:
             - name: NODE_ENV
               value: "production"
@@ -24,10 +24,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: semaphore-demo-javascript-server-lb
+  name: semaphore-demo-nodejs-k8s-server-lb
 spec:
   selector:
-    app: semaphore-demo-javascript-server
+    app: semaphore-demo-nodejs-k8s-server
   type: LoadBalancer
   ports:
     - port: 80

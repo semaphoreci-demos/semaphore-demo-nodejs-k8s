@@ -17,7 +17,7 @@ blocks:
       # See https://docs.semaphoreci.com/article/66-environment-variables-and-secrets
       env_vars:
         - name: CLUSTER_NAME
-          value: semaphore-demo-javascript-server
+          value: semaphore-demo-nodejs-k8s-server
       prologue:
         commands:
           # Authenticate using the file injected from the secret
@@ -38,7 +38,7 @@ blocks:
           - kubectl get pods
 
           # Our deployment.yml instructs Kubernetes to pull container image
-          # named semaphoredemos/semaphore-demo-javascript-server:$SEMAPHORE_WORKFLOW_ID
+          # named semaphoredemos/semaphore-demo-nodejs-k8s-server:$SEMAPHORE_WORKFLOW_ID
           # envsubst is a tool which will replace $SEMAPHORE_WORKFLOW_ID with
           # its current value. The same variable was used in server-docker-build.yml
           # pipeline to tag and push a container image.
@@ -66,6 +66,6 @@ blocks:
       jobs:
       - name: docker tag latest
         commands:
-          - docker pull "gcr.io/$GCP_PROJECT_ID/semaphore-demo-javascript-server:$SEMAPHORE_WORKFLOW_ID"
-          - docker tag "gcr.io/$GCP_PROJECT_ID/semaphore-demo-javascript-server:$SEMAPHORE_WORKFLOW_ID" "gcr.io/$GCP_PROJECT_ID/semaphore-demo-javascript-server:latest"
-          - docker push "gcr.io/$GCP_PROJECT_ID/semaphore-demo-javascript-server:latest"
+          - docker pull "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:$SEMAPHORE_WORKFLOW_ID"
+          - docker tag "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:$SEMAPHORE_WORKFLOW_ID" "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:latest"
+          - docker push "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:latest"
