@@ -4,7 +4,7 @@ version: v1.0
 # Name your pipeline. In case you connect multiple pipelines with promotions,
 # the name will help you differentiate between, for example, a CI build phase
 # and delivery phases.
-name: Semaphore JavaScript Example Pipeline
+name: Semaphore Nodejs Example Pipeline
 
 # An agent defines the environment in which your code runs.
 # It is a combination of one of available machine types and operating
@@ -48,9 +48,9 @@ blocks:
       jobs:
         - name: npm install and cache
           commands:
-            - cache restore node-modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json),node-modules-$SEMAPHORE_GIT_BRANCH,node-modules-master
+            - cache restore
             - npm install
-            - cache store node-modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json) node_modules
+            - cache store
 
   - name: Tests
     task:
@@ -80,13 +80,13 @@ blocks:
         # code analysis test
         - name: Lint
           commands:
-            - cache restore node-modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json),node-modules-$SEMAPHORE_GIT_BRANCH,node-modules-master
+            - cache restore
             - npm run lint
 
         # unit tests
         - name: Unit tests
           commands:
-            - cache restore node-modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json),node-modules-$SEMAPHORE_GIT_BRANCH,node-modules-master
+            - cache restore
             - npm test
 
         # end-to-end tests
@@ -96,7 +96,7 @@ blocks:
             # environment as your code.
             # See https://docs.semaphoreci.com/article/32-ubuntu-1804-image#databases-and-services
             - sem-service start postgres
-            - cache restore node-modules-$SEMAPHORE_GIT_BRANCH-$(checksum package-lock.json),node-modules-$SEMAPHORE_GIT_BRANCH,node-modules-master
+            - cache restore
             - cp ormconfig.ci.json ormconfig.json
             - npm run migrate:up
             - npm run test:e2e

@@ -1,13 +1,44 @@
-# Semaphore demo CI/CD pipeline using Node.js
+# Semaphore demo CI/CD pipeline using Node.js and Kubernetes
 
-Example application and CI/CD pipeline showing how to run a JavaScript project
-on Semaphore 2.0. Project consists of a Node.js server based on Nest.js. 
-The code is written in TypeScript.
+Example application and CI/CD pipeline showing how to run a Node.js project
+on Semaphore 2.0. 
+
+The application is based on Nest.js. The code is written in TypeScript.
+
+The application is deployed to Google Cloud Kubernetes.
 
 ## CI/CD on Semaphore
 
-Fork this repository and use it to 
+1. Fork this repository and use it to 
 [create a project](https://docs.semaphoreci.com/article/63-your-first-project).
+2. Create a project on Google Cloud: `semaphore-demo-nodejs-k8s`
+3. Create Kubernetes cluster on Google Cloud: `semaphore-demo-nodejs-k8s-server`
+4. Create PostgreSQL db on Google Cloud.
+5. Create database `demo` and user `demouser`.
+6. Copy environment files and edit db hostname and db password:
+    ```bash
+    $ cp ormconfig.sample.json /tmp/ormconfig.production.json
+    $ cp sample.env /tmp/production.env
+    ```
+7. Upload environment files as a secret:
+
+    ```bash
+    $ sem create secret production-env \
+        -f /tmp/ormconfig.production.json:/home/semaphore/ormconfig.production.json \
+        -f /tmp/production.env:/home/semaphore/production.env
+    ```
+
+8. Create Service Account in IAM:
+    - Role: project owner
+    - Create and download access key JSON file.
+9. Upload Access Key to Semaphore as a secret:
+    ```bash
+    $ sem create secret gcr-secret \
+        -e GCP_PROJECT_ID=semaphore-demo-nodejs-k8s \
+        -e GCP_PROJECT_DEFAULT_ZONE=YOUR_REGION_AND_ZONE \
+        -f PATH_TO_YOUR_ACCESS_KEY_FILE.json:/home/semaphore/.secrets.gcp.json 
+    ```
+10. Push changes to get workflow started.
 
 The CI pipeline will look like this:
 
@@ -16,11 +47,11 @@ The CI pipeline will look like this:
 The example pipeline contains 2 blocks:
 
 - Build
- - Install Dependencies: installs and caches all npm dependencies
+    - Install Dependencies: installs and caches all npm dependencies
 - Test
- - Lint: Runs tslint to check project files codestyle
- - Unit tests: Runs Unit Tests
- - E2E tests: Runs E2E tests through jest on server.
+    - Lint: Runs tslint to check project files codestyle
+    - Unit tests: Runs Unit Tests
+    - E2E tests: Runs E2E tests through jest on server.
 
 Then, if all checks are ok, we move to build pipeline. It consists of one block
 
