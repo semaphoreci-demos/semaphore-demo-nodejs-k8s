@@ -7,16 +7,10 @@ agent:
 blocks:
   - name: Build
     task:
-      prologue:
-        commands:
-          - gcloud auth activate-service-account --key-file=.secrets.gcp.json
-          - gcloud auth configure-docker -q
-          - gcloud config set project $GCP_PROJECT_ID
-          - gcloud config set compute/zone $GCP_PROJECT_DEFAULT_ZONE
-          - checkout
       jobs:
         - name: Docker build
           commands:
+            - checkout
             - cp ormconfig.sample.json ormconfig.json
             - cp sample.env production.env
             - 'docker build -t ttl.sh/semaphore-demo-nodejs-k8s-server:2h .'
@@ -28,5 +22,3 @@ blocks:
 promotions:
   - name: Deploy to Kubernetes
     pipeline_file: deploy-k8s.yml
-    auto_promote_on:
-      - result: passed
