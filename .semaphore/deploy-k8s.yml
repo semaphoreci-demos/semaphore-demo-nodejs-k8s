@@ -7,8 +7,6 @@ agent:
 blocks:
   - name: Deploy to Kubernetes
     task:
-      secrets:
-        - name: gcr-secret
       env_vars:
         - name: CLUSTER_NAME
           value: semaphore-demo-nodejs-k8s-server
@@ -27,20 +25,3 @@ blocks:
             - kubectl get pods
             - cat deployment.yml | envsubst | tee deployment.yml
             - kubectl apply -f deployment.yml
-  - name: Tag latest release
-    task:
-      secrets:
-        - name: gcr-secret
-      prologue:
-        commands:
-          - gcloud auth activate-service-account --key-file=.secrets.gcp.json
-          - gcloud auth configure-docker -q
-          - gcloud config set project $GCP_PROJECT_ID
-          - gcloud config set compute/zone $GCP_PROJECT_DEFAULT_ZONE
-          - checkout
-      jobs:
-        - name: docker tag latest
-          commands:
-            - 'docker pull "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:$SEMAPHORE_WORKFLOW_ID"'
-            - 'docker tag "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:$SEMAPHORE_WORKFLOW_ID" "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:latest"'
-            - 'docker push "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:latest"'
