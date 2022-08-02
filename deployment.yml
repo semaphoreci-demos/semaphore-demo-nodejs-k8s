@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: semaphore-demo-nodejs-k8s-server
-          image: gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:$SEMAPHORE_WORKFLOW_ID
+          image: ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h
           env:
             - name: NODE_ENV
               value: "production"
