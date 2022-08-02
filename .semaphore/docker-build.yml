@@ -13,12 +13,8 @@ blocks:
             - checkout
             - cp ormconfig.sample.json ormconfig.json
             - cp sample.env production.env
-            - 'docker build -t ttl.sh/semaphore-demo-nodejs-k8s-server:2h .'
-            - 'docker push ttl.sh/semaphore-demo-nodejs-k8s-server:2h'
-            - '#docker pull "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:latest" || true'
-            - '#docker build --cache-from "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:latest" -t "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:$SEMAPHORE_WORKFLOW_ID" .'
-            - '#docker images'
-            - '#docker push "gcr.io/$GCP_PROJECT_ID/semaphore-demo-nodejs-k8s-server:$SEMAPHORE_WORKFLOW_ID"'
+            - 'docker build -t ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h .'
+            - 'docker push ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h'
 promotions:
   - name: Deploy to Kubernetes
     pipeline_file: deploy-k8s.yml
