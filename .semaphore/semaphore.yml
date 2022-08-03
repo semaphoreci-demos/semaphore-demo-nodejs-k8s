@@ -17,12 +17,12 @@ blocks:
           - checkout
           - nvm use
           - node --version
-          - npm --version
+          - yarn --version
       jobs:
-        - name: npm install and cache
+        - name: yarn install and cache
           commands:
             - cache restore
-            - npm install
+            - yarn install
             - cache store
   - name: Tests
     task:
@@ -36,23 +36,23 @@ blocks:
           - checkout
           - nvm use
           - node --version
-          - npm --version
+          - yarn --version
       jobs:
         - name: Lint
           commands:
             - cache restore
-            - npm run lint
+            - yarn run lint
         - name: Unit tests
           commands:
             - cache restore
-            - npm test
+            - yarn test
         - name: E2E tests
           commands:
             - sem-service start postgres
             - cache restore
             - cp ormconfig.ci.json ormconfig.json
-            - 'npm run migrate:up'
-            - 'npm run test:e2e'
+            - 'yarn run migrate:up'
+            - 'yarn run test:e2e'
 promotions:
   - name: Dockerize
     pipeline_file: docker-build.yml

@@ -2,13 +2,13 @@ FROM node:16.16.0-alpine3.15 as dist
 WORKDIR /tmp/
 COPY package*.json tsconfig*.json *.env ormconfig*.json ./
 COPY src/ src/
-RUN npm install
-RUN npm run build
+RUN yarn install
+RUN yarn run build
 
 FROM node:16.16.0-alpine3.15 as node_modules
 WORKDIR /tmp/
 COPY package.json package-lock.json ./
-RUN npm install --production
+RUN yarn install --production
 
 FROM node:16.16.0-alpine3.16
 WORKDIR /usr/local/nub-api
