@@ -56,22 +56,20 @@ blocks:
             - 'yarn run test:e2e'
     dependencies:
       - Install dependencies
-  - name: kubescape
-    dependencies: []
+  - name: Docker build
+    dependencies:
+      - Tests
     task:
-      prologue:
-        commands:
-          - 'curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | /bin/bash'
       jobs:
-        - name: experiment
+        - name: Build image
           commands:
             - checkout
-            - kubescape scan framework nsa -t 40 deployment.yml
-            - '#kubescape scan --format junit -o report.xml'
-    skip:
-      when: 'true'
+            - cp ormconfig.sample.json ormconfig.json
+            - cp sample.env production.env
+            - 'docker build -t ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h .'
+            - 'docker push ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h'
 promotions:
-  - name: Dockerize
-    pipeline_file: docker-build.yml
+  - name: Deploy
+    pipeline_file: deploy-k8s.yml
     auto_promote:
       when: branch = 'master' AND result = 'passed'
