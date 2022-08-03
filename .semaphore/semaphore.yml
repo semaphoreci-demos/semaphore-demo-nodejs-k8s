@@ -4,6 +4,11 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+global_job_config:
+  epilogue:
+    always:
+      commands:
+        - '[[ -f report.xml ]] && test-results publish report.xml'
 blocks:
   - name: Install dependencies
     task:
@@ -69,6 +74,12 @@ blocks:
             - kubescape scan framework nsa -t 40 deployment.yml
             - kubescape scan framework nsa -t 40 deployment.yml --format junit -o report.xml
             - '#kubescape scan --format junit -o report.xml'
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
 promotions:
   - name: Dockerize
     pipeline_file: docker-build.yml
