@@ -73,3 +73,5 @@ blocks:
 promotions:
   - name: Dockerize
     pipeline_file: docker-build.yml
+    auto_promote:
+      when: branch = 'master' AND result = 'passed'

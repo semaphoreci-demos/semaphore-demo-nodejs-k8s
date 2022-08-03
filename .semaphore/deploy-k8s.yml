@@ -21,7 +21,11 @@ blocks:
       jobs:
         - name: Deploy
           commands:
-            - true
+            - checkout
+            - envsubst < deployment.yml > deploy-application.yml
+            - kubectl apply -f deploy-application.yml || true
+      secrets:
+        - name: kubeconfig
     dependencies:
       - Security check
   - name: Security check
