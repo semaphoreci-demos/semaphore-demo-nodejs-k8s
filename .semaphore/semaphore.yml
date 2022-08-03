@@ -24,6 +24,7 @@ blocks:
             - cache restore
             - yarn install
             - cache store
+    dependencies: []
   - name: Tests
     task:
       env_vars:
@@ -53,6 +54,20 @@ blocks:
             - cp ormconfig.ci.json ormconfig.json
             - 'yarn run migrate:up'
             - 'yarn run test:e2e'
+    dependencies:
+      - Install dependencies
+  - name: kubescape
+    dependencies: []
+    task:
+      prologue:
+        commands:
+          - 'curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | /bin/bash'
+      jobs:
+        - name: experiment
+          commands:
+            - kubescape scan framework nsa -t 40 deployment.yml
+            - kubescape scan framework nsa -t 40 deployment.yml --format junit -o report.xml
+            - '#kubescape scan --format junit -o report.xml'
 promotions:
   - name: Dockerize
     pipeline_file: docker-build.yml
