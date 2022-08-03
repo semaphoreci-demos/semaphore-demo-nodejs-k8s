@@ -15,6 +15,14 @@ blocks:
             - cp sample.env production.env
             - 'docker build -t ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h .'
             - 'docker push ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h'
+  - name: Image scan
+    task:
+      jobs:
+        - name: Docker scan
+          commands:
+            - docker scan
+            - 'docker pull ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h'
+            - 'docker scan ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h'
 promotions:
   - name: Deploy to Kubernetes
     pipeline_file: deploy-k8s.yml
