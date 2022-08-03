@@ -72,7 +72,8 @@ blocks:
           commands:
             - checkout
             - '#kubescape scan framework nsa -t 40 deployment.yml'
-            - kubescape scan framework devopsbest -t 40 deployment.yml --format junit -o report.xml
+            - '#kubescape scan framework DevOpsBest -t 40 deployment.yml --format junit -o report.xml'
+            - kubescape scan framework DevOpsBest -t 40 deployment.yml
             - '#kubescape scan --format junit -o report.xml'
 after_pipeline:
   task:
