@@ -4,6 +4,11 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+global_job_config:
+  epilogue:
+    always:
+      commands:
+        - '[[ -f report.xml ]] && test-results publish report.xml'
 blocks:
   - name: Deploy to Kubernetes
     task:
@@ -17,3 +22,25 @@ blocks:
         - name: Deploy
           commands:
             - true
+    dependencies:
+      - Security check
+  - name: Security check
+    dependencies: []
+    task:
+      prologue:
+        commands:
+          - 'curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | /bin/bash'
+      jobs:
+        - name: Scan manifest
+          commands:
+            - checkout
+            - kubescape scan framework DevOpsBest -t 40 deployment.yml --format junit -o report.xml
+        - name: Scan cluster
+          commands:
+            - kubescape scan framework DevOpsBest --format junit -o report.xml
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
