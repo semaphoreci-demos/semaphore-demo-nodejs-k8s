@@ -65,6 +65,7 @@ blocks:
       jobs:
         - name: experiment
           commands:
+            - checkout
             - kubescape scan framework nsa -t 40 deployment.yml
             - kubescape scan framework nsa -t 40 deployment.yml --format junit -o report.xml
             - '#kubescape scan --format junit -o report.xml'
