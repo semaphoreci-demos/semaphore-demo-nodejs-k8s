@@ -40,9 +40,9 @@
   "devDependencies": {
     "@types/express": "^4.16.0",
     "@types/jest": "^23.3.13",
-    "@types/joi": "^14.3.2",
-    "@types/node": "^10.12.18",
-    "@types/supertest": "^2.0.7",
+    "@types/joi": "^14.3.1",
+    "@types/node": "^16.11.47",
+    "@types/supertest": "^2.0.12",
     "jest": "^23.6.0",
     "nodemon": "^1.18.9",
     "prettier": "^1.15.3",
