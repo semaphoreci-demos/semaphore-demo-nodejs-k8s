@@ -37,7 +37,9 @@ blocks:
             - kubescape scan framework DevOpsBest -t 40 deployment.yml --format junit -o report.xml
         - name: Scan cluster
           commands:
-            - kubescape scan framework DevOpsBest --format junit -o report.xml
+            - kubescape scan framework DevOpsBest --format junit -o report.xml || true
+      secrets:
+        - name: kubeconfig
 after_pipeline:
   task:
     jobs:
