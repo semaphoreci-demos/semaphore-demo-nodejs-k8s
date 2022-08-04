@@ -4,6 +4,11 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+global_job_config:
+  epilogue:
+    always:
+      commands:
+        - '[[ -f report.xml ]] && test-results publish report.xml'
 blocks:
   - name: Deploy to Kubernetes
     task:
@@ -12,16 +17,19 @@ blocks:
           value: semaphore-demo-nodejs-k8s-server
       prologue:
         commands:
-          - gcloud auth activate-service-account --key-file=.secrets.gcp.json
-          - gcloud auth configure-docker -q
-          - gcloud config set project $GCP_PROJECT_ID
-          - gcloud config set compute/zone $GCP_PROJECT_DEFAULT_ZONE
-          - gcloud container clusters get-credentials $CLUSTER_NAME --zone $GCP_PROJECT_DEFAULT_ZONE --project $GCP_PROJECT_ID
           - checkout
       jobs:
         - name: Deploy
           commands:
-            - kubectl get nodes
-            - kubectl get pods
-            - cat deployment.yml | envsubst | tee deployment.yml
-            - kubectl apply -f deployment.yml
+            - checkout
+            - envsubst < deployment.yml > deploy-application.yml
+            - kubectl apply -f deploy-application.yml || true
+      secrets:
+        - name: kubeconfig
+    dependencies: []
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
