@@ -46,7 +46,14 @@ blocks:
           commands:
             - checkout
             - export MAX_RISK=40
-            - kubescape scan -t "$MAX_RISK" deployment.yml --format junit -o report.xml
+            - kubescape scan -t "$MAX_RISK" deployment.yml --format junit -o report.xml||true
+        - name: Scan cluster
+          commands:
+            - checkout
+            - export MAX_RISK=40
+            - 'kubescape scan --exclude-namespaces kube-system,kube-public -t $MAX_RISK --format junit -o report.xml||true'
+      secrets:
+        - name: kubeconfig
 after_pipeline:
   task:
     jobs:
