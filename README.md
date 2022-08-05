@@ -1,48 +1,21 @@
 # Semaphore demo CI/CD pipeline using Node.js and Kubernetes
 
-Example application and CI/CD pipeline showing how to run a Node.js project
-on Semaphore 2.0. 
+Example application and CI/CD pipeline showing how to run a Node.js project on Semaphore.
 
 The application is based on Nest.js. The code is written in TypeScript.
 
-The application is deployed to Google Cloud Kubernetes.
+The application can be deployed to any Kubernetes cluster.
 
 ## CI/CD on Semaphore
 
-1. Fork this repository and use it to 
-[create a project](https://docs.semaphoreci.com/article/63-your-first-project).
-2. Create a project on Google Cloud: `semaphore-demo-nodejs-k8s`
-3. Create Kubernetes cluster on Google Cloud: `semaphore-demo-nodejs-k8s-server`
-4. Create PostgreSQL db on Google Cloud.
-5. Create database `demo` and user `demouser`.
-6. Copy environment files and edit db hostname and db password:
-    ```bash
-    $ cp ormconfig.sample.json /tmp/ormconfig.production.json
-    $ cp sample.env /tmp/production.env
-    ```
-7. Upload environment files as a secret:
-
-    ```bash
-    $ sem create secret production-env \
-        -f /tmp/ormconfig.production.json:/home/semaphore/ormconfig.production.json \
-        -f /tmp/production.env:/home/semaphore/production.env
-    ```
-
-8. Create Service Account in IAM:
-    - Role: project owner
-    - Create and download access key JSON file.
-9. Upload Access Key to Semaphore as a secret:
-    ```bash
-    $ sem create secret gcr-secret \
-        -e GCP_PROJECT_ID=semaphore-demo-nodejs-k8s \
-        -e GCP_PROJECT_DEFAULT_ZONE=YOUR_REGION_AND_ZONE \
-        -f PATH_TO_YOUR_ACCESS_KEY_FILE.json:/home/semaphore/.secrets.gcp.json 
-    ```
-10. Push changes to get workflow started.
+1. Setup you database. Check `ormconfig.json` for details.
+2. Download the [kubeconfig](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) file and upload it as a [secret](https://docs.semaphoreci.com/essentials/using-secrets/) on Semaphore.
+3. Fork this fork and add it to Semaphore.
+4. Push a change to your repository and deploy the application.
 
 The CI pipeline will look like this:
 
-![CI pipeline on Semaphore](.semaphore/pipeline.png)
+![CI pipeline on Semaphore](.semaphore/pipeline-fork-and-run.jpg)
 
 The example pipeline contains 2 blocks:
 
@@ -55,21 +28,12 @@ The example pipeline contains 2 blocks:
 
 Then, if all checks are ok, we move to build pipeline. It consists of one block
 
- - Build: build container and push it into google repository
-
-Then, after we've built our apps we move to deploy pipeline.
-It  also consists of one block for client and of two for server.
-As you can see deploy pipelines of client and server depend only on their own build step
-and therefore could be run in parallel.
-
- - Deploy
-    - Deploy server to k8s, pdate k8s deployment using deployment config
-    - Tag container if all went well
+ - Build: build the container image and push to the [ttl.sh](https://ttl.sh/) public repository .
+ - Deploy: deploy the image in your Kubernetes cluster.
 
 ## Local project setup
 
-This project requires a PostgreSQL database. If you don't have one you can
-launch a Docker container to have one.
+This project requires a PostgreSQL database. If you don't have one you can launch a Docker container to have one.
 
 ### Configuration
 
@@ -90,7 +54,7 @@ $ docker-compose up
 Install dependencies:
 
 ```bash
-$ npm install
+$ yarn install
 ```
 
 Copy app and db config:
@@ -104,42 +68,42 @@ Run migrations:
 
 ```bash
 # apply migrations forward
-$ npm run migrate:up
+$ yarn run migrate:up
 
 # to revert last migration
-$ npm run migrate:revert
+$ yarn run migrate:revert
 ```
 
 Running the app:
 
 ```bash
 # development mode
-$ npm run start
+$ yarn run start
 
 # watch mode
-$ npm run start:dev
+$ yarn run start:dev
 
 # production mode
-$ npm run start:prod
+$ yarn run start:prod
 ```
 
 Run static code analysis:
 
 ```bash
-$ npm run lint
+$ yarn run lint
 ```
 
 Run unit and end-to-end tests:
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn run test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn run test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn run test:cov
 ```
 
 ## Deploy configuration
@@ -150,6 +114,6 @@ Copy each secret file into file without `.sample` in filename and populate it. A
 
 ## License
 
-Copyright (c) 2019 Rendered Text
+Copyright (c) 2022 Rendered Text
 
 Distributed under the MIT License. See the file [LICENSE.md](./LICENSE.md).
