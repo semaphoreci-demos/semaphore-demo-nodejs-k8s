@@ -90,7 +90,7 @@ $ docker-compose up
 Install dependencies:
 
 ```bash
-$ npm install
+$ yarn install
 ```
 
 Copy app and db config:
@@ -104,42 +104,42 @@ Run migrations:
 
 ```bash
 # apply migrations forward
-$ npm run migrate:up
+$ yarn run migrate:up
 
 # to revert last migration
-$ npm run migrate:revert
+$ yarn run migrate:revert
 ```
 
 Running the app:
 
 ```bash
 # development mode
-$ npm run start
+$ yarn run start
 
 # watch mode
-$ npm run start:dev
+$ yarn run start:dev
 
 # production mode
-$ npm run start:prod
+$ yarn run start:prod
 ```
 
 Run static code analysis:
 
 ```bash
-$ npm run lint
+$ yarn run lint
 ```
 
 Run unit and end-to-end tests:
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn run test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn run test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn run test:cov
 ```
 
 ## Deploy configuration
@@ -150,6 +150,6 @@ Copy each secret file into file without `.sample` in filename and populate it. A
 
 ## License
 
-Copyright (c) 2019 Rendered Text
+Copyright (c) 2022 Rendered Text
 
 Distributed under the MIT License. See the file [LICENSE.md](./LICENSE.md).
