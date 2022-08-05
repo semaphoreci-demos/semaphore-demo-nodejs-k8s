@@ -1,5 +1,5 @@
 version: v1.0
-name: Semaphore Nodejs Example Pipeline
+name: Continuous Integration Pipeline
 agent:
   machine:
     type: e1-standard-2
@@ -24,6 +24,7 @@ blocks:
             - cache restore
             - yarn install
             - cache store
+    dependencies: []
   - name: Tests
     task:
       env_vars:
@@ -53,6 +54,8 @@ blocks:
             - cp ormconfig.ci.json ormconfig.json
             - 'yarn run migrate:up'
             - 'yarn run test:e2e'
+    dependencies:
+      - Install dependencies
 promotions:
-  - name: Dockerize
-    pipeline_file: docker-build.yml
+  - name: Deploy
+    pipeline_file: deploy-k8s.yml

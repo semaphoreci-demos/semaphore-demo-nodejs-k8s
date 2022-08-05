@@ -4,24 +4,57 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+global_job_config:
+  epilogue:
+    always:
+      commands:
+        - '[[ -f report.xml ]] && test-results publish report.xml'
 blocks:
-  - name: Deploy to Kubernetes
+  - name: Deploy
     task:
-      env_vars:
-        - name: CLUSTER_NAME
-          value: semaphore-demo-nodejs-k8s-server
-      prologue:
-        commands:
-          - gcloud auth activate-service-account --key-file=.secrets.gcp.json
-          - gcloud auth configure-docker -q
-          - gcloud config set project $GCP_PROJECT_ID
-          - gcloud config set compute/zone $GCP_PROJECT_DEFAULT_ZONE
-          - gcloud container clusters get-credentials $CLUSTER_NAME --zone $GCP_PROJECT_DEFAULT_ZONE --project $GCP_PROJECT_ID
-          - checkout
+      env_vars: []
       jobs:
         - name: Deploy
           commands:
-            - kubectl get nodes
-            - kubectl get pods
-            - cat deployment.yml | envsubst | tee deployment.yml
-            - kubectl apply -f deployment.yml
+            - checkout
+            - envsubst < deployment.yml > deploy-production.yml
+            - kubectl apply -f deploy-production.yml
+      secrets:
+        - name: kubeconfig
+    dependencies:
+      - Build image
+  - name: Build image
+    dependencies:
+      - Kubescape
+    task:
+      jobs:
+        - name: Docker build
+          commands:
+            - checkout
+            - cp ormconfig.sample.json ormconfig.json
+            - cp sample.env production.env
+            - 'docker build -t ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h .'
+            - 'docker push ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h'
+  - name: Kubescape
+    dependencies: []
+    task:
+      prologue:
+        commands:
+          - 'curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | /bin/bash'
+      jobs:
+        - name: Scan manifest
+          commands:
+            - checkout
+            - export MAX_RISK=40
+            - kubescape scan -t "$MAX_RISK" deployment.yml --format junit -o report.xml
+        - name: Scan cluster
+          commands:
+            - checkout
+            - export MAX_RISK=40
+            - 'kubescape scan --exclude-namespaces kube-system,kube-public -t $MAX_RISK --format junit -o report.xml'
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
