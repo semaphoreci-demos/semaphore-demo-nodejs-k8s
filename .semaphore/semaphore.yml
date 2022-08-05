@@ -1,5 +1,5 @@
 version: v1.0
-name: Semaphore Nodejs Example Pipeline
+name: Continuous Integration Pipeline
 agent:
   machine:
     type: e1-standard-2
@@ -56,20 +56,6 @@ blocks:
             - 'yarn run test:e2e'
     dependencies:
       - Install dependencies
-  - name: Docker build
-    dependencies:
-      - Tests
-    task:
-      jobs:
-        - name: Build image
-          commands:
-            - checkout
-            - cp ormconfig.sample.json ormconfig.json
-            - cp sample.env production.env
-            - 'docker build -t ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h .'
-            - 'docker push ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h'
 promotions:
   - name: Deploy
     pipeline_file: deploy-k8s.yml
-    auto_promote:
-      when: branch = 'master' AND result = 'passed'

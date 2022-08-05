@@ -10,23 +10,30 @@ global_job_config:
       commands:
         - '[[ -f report.xml ]] && test-results publish report.xml'
 blocks:
-  - name: Deploy to Kubernetes
+  - name: Deploy
     task:
-      env_vars:
-        - name: CLUSTER_NAME
-          value: semaphore-demo-nodejs-k8s-server
-      prologue:
-        commands:
-          - checkout
+      env_vars: []
       jobs:
         - name: Deploy
           commands:
             - checkout
-            - envsubst < deployment.yml > deploy-application.yml
-            - kubectl apply -f deploy-application.yml || true
+            - envsubst < deployment.yml > deploy-production.yml
+            - kubectl apply -f deploy-production.yml
       secrets:
         - name: kubeconfig
+    dependencies:
+      - Build image
+  - name: Build image
     dependencies: []
+    task:
+      jobs:
+        - name: Docker build
+          commands:
+            - checkout
+            - cp ormconfig.sample.json ormconfig.json
+            - cp sample.env production.env
+            - 'docker build -t ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h .'
+            - 'docker push ttl.sh/$SEMAPHORE_WORKFLOW_ID:2h'
 after_pipeline:
   task:
     jobs:
